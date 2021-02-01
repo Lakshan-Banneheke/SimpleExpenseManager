@@ -96,7 +96,7 @@ public class PersistentAccountDAO implements AccountDAO {
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         Account account = this.getAccount(accountNo);
-//        Log.d("Initial Balance", String.valueOf(account.getBalance()));
+        Log.d("Initial Balance", String.valueOf(account.getBalance()));
         double updatedBalance;
         ContentValues cv = new ContentValues();
         switch (expenseType){
@@ -124,6 +124,6 @@ public class PersistentAccountDAO implements AccountDAO {
 
 
         }
-//        Log.d("Final Balance", String.valueOf(this.getAccount(accountNo).getBalance()));
+        Log.d("Final Balance", String.valueOf(this.getAccount(accountNo).getBalance()));
     }
 }
