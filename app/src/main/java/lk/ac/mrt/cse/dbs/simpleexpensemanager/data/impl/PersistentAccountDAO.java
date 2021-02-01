@@ -111,7 +111,7 @@ public class PersistentAccountDAO implements AccountDAO {
                 break;
             case EXPENSE:
                 if (account.getBalance() - amount < 0){
-                    throw new InvalidAccountException("Balance insufficient");
+                    throw new InvalidAccountException("Balance insufficient. Available balace is " + account.getBalance());
                 } else {
                     updatedBalance = account.getBalance() - amount;
                     cv.put(DatabaseConstants.COLUMN_BALANCE, updatedBalance);

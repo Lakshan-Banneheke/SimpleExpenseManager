@@ -17,6 +17,7 @@ import java.util.Locale;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.database.DatabaseConstants;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.database.DatabaseHelper;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
 
@@ -30,16 +31,24 @@ public class PersistentTransactionDAO implements TransactionDAO {
 
     @Override
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount) {
-
-        //TODO Make sure it doesnt get logged if no sufficient funds
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.getDefault());
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(DatabaseConstants.COLUMN_DATE, dateFormat.format(date));
-        cv.put(DatabaseConstants.COLUMN_ACCOUNT_NO, accountNo);
-        cv.put(DatabaseConstants.COLUMN_EXPENSE_TYPE, String.valueOf(expenseType));
-        cv.put(DatabaseConstants.COLUMN_AMOUNT, amount);
-        db.insert(DatabaseConstants.TRANSACTION_TABLE, null, cv);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.getDefault());
+
+        //Making sure it doesnt get logged if no sufficient funds are available
+        String query = "SELECT " + DatabaseConstants.COLUMN_BALANCE + " FROM " + DatabaseConstants.ACCOUNT_TABLE + " WHERE " + DatabaseConstants.COLUMN_ACCOUNT_NO + " =?;";
+        Cursor cursor = db.rawQuery(query, new String[]{accountNo});
+        if (cursor.moveToFirst()){
+            double balance = cursor.getDouble(0);
+            cursor.close();
+            if (expenseType == ExpenseType.INCOME || balance - amount >= 0){
+                ContentValues cv = new ContentValues();
+                cv.put(DatabaseConstants.COLUMN_DATE, dateFormat.format(date));
+                cv.put(DatabaseConstants.COLUMN_ACCOUNT_NO, accountNo);
+                cv.put(DatabaseConstants.COLUMN_EXPENSE_TYPE, String.valueOf(expenseType));
+                cv.put(DatabaseConstants.COLUMN_AMOUNT, amount);
+                db.insert(DatabaseConstants.TRANSACTION_TABLE, null, cv);
+            }
+        }
     }
 
     @Override
