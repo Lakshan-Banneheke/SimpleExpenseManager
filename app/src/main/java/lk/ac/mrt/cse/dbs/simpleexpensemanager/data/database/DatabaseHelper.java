@@ -16,12 +16,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createAccountQuery = "CREATE TABLE " + DatabaseConstants.ACCOUNT_TABLE + " (" + DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT PRIMARY KEY, " + DatabaseConstants.COLUMN_BANK_NAME + " TEXT, " +  DatabaseConstants.COLUMN_ACCOUNT_HOLDER_NAME + " TEXT, " + DatabaseConstants.COLUMN_BALANCE + " REAL)";
+        String createAccountQuery = "CREATE TABLE " + DatabaseConstants.ACCOUNT_TABLE + " (" + DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT PRIMARY KEY, " + DatabaseConstants.COLUMN_BANK_NAME + " TEXT NOT NULL, " +  DatabaseConstants.COLUMN_ACCOUNT_HOLDER_NAME + " TEXT NOT NULL, " + DatabaseConstants.COLUMN_BALANCE + " REAL NOT NULL CHECK(" + DatabaseConstants.COLUMN_BALANCE + ">= 0))";
         db.execSQL(createAccountQuery);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+//        db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstants.TRANSACTION_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstants.ACCOUNT_TABLE);
+        onCreate(db);
     }
 }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,6 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public void removeAccount(String accountNo) throws InvalidAccountException {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        String query = "DELETE FROM " + DatabaseConstants.ACCOUNT_TABLE + " WHERE " + DatabaseConstants.COLUMN_ACCOUNT_NO + " = ?";
         long delete = db.delete(DatabaseConstants.ACCOUNT_TABLE,DatabaseConstants.COLUMN_ACCOUNT_NO + " = ?", new String[]{accountNo});
         if (delete == -1) {
             throw new InvalidAccountException("Account Number is invalid");
@@ -94,6 +94,36 @@ public class PersistentAccountDAO implements AccountDAO {
 
     @Override
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        Account account = this.getAccount(accountNo);
+//        Log.d("Initial Balance", String.valueOf(account.getBalance()));
+        double updatedBalance;
+        ContentValues cv = new ContentValues();
+        switch (expenseType){
+            case INCOME:
+                updatedBalance = account.getBalance() + amount;
+                cv.put(DatabaseConstants.COLUMN_BALANCE, updatedBalance);
+                long updateIncome = db.update(DatabaseConstants.ACCOUNT_TABLE, cv,DatabaseConstants.COLUMN_ACCOUNT_NO + " = ?", new String[]{accountNo});
+                Log.d("MESSAGE", String.valueOf(updateIncome));
+                if (updateIncome == 0) {
+                    throw new InvalidAccountException("Database Error");
+                }
+                break;
+            case EXPENSE:
+                if (account.getBalance() - amount < 0){
+                    throw new InvalidAccountException("Balance insufficient");
+                } else {
+                    updatedBalance = account.getBalance() - amount;
+                    cv.put(DatabaseConstants.COLUMN_BALANCE, updatedBalance);
+                    long updateExpense = db.update(DatabaseConstants.ACCOUNT_TABLE, cv,DatabaseConstants.COLUMN_ACCOUNT_NO + " = ?", new String[]{accountNo});
+                    if (updateExpense == 0) {
+                        throw new InvalidAccountException("Database Error");
+                    }
+                }
+                break;
 
+
+        }
+//        Log.d("Final Balance", String.valueOf(this.getAccount(accountNo).getBalance()));
     }
 }
