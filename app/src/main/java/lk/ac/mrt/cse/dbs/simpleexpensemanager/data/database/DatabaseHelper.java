@@ -16,9 +16,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createAccountTableQuery = "CREATE TABLE " + DatabaseConstants.ACCOUNT_TABLE + " (" + DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT PRIMARY KEY, " + DatabaseConstants.COLUMN_BANK_NAME + " TEXT NOT NULL, " +  DatabaseConstants.COLUMN_ACCOUNT_HOLDER_NAME + " TEXT NOT NULL, " + DatabaseConstants.COLUMN_BALANCE + " REAL NOT NULL CHECK(" + DatabaseConstants.COLUMN_BALANCE + ">= 0))";
+        String createAccountTableQuery =
+                "CREATE TABLE IF NOT EXISTS " + DatabaseConstants.ACCOUNT_TABLE + " (" +
+                    DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT PRIMARY KEY, " +
+                    DatabaseConstants.COLUMN_BANK_NAME + " TEXT NOT NULL, " +
+                    DatabaseConstants.COLUMN_ACCOUNT_HOLDER_NAME + " TEXT NOT NULL, " +
+                    DatabaseConstants.COLUMN_BALANCE + " REAL NOT NULL " +
+                        "CHECK(" + DatabaseConstants.COLUMN_BALANCE + ">= 0)" +
+                ")";
         db.execSQL(createAccountTableQuery);
-        String createTransactionTableQuery = "CREATE TABLE " + DatabaseConstants.TRANSACTION_TABLE + " (" + DatabaseConstants.COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY, " + DatabaseConstants.COLUMN_DATE + " TEXT NOT NULL, " +  DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT NOT NULL, " + DatabaseConstants.COLUMN_EXPENSE_TYPE + " TEXT NOT NULL, " + DatabaseConstants.COLUMN_AMOUNT + " REAL NOT NULL, FOREIGN KEY(" + DatabaseConstants.COLUMN_ACCOUNT_NO + ") REFERENCES " + DatabaseConstants.ACCOUNT_TABLE + "(" + DatabaseConstants.COLUMN_ACCOUNT_NO + "))";
+        String createTransactionTableQuery =
+                "CREATE TABLE IF NOT EXISTS " + DatabaseConstants.TRANSACTION_TABLE + " (" +
+                        DatabaseConstants.COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY, " +
+                        DatabaseConstants.COLUMN_DATE + " TEXT NOT NULL, " +
+                        DatabaseConstants.COLUMN_ACCOUNT_NO + " TEXT NOT NULL, " +
+                        DatabaseConstants.COLUMN_EXPENSE_TYPE + " TEXT NOT NULL, " +
+                        DatabaseConstants.COLUMN_AMOUNT + " REAL NOT NULL, " +
+                        "FOREIGN KEY(" + DatabaseConstants.COLUMN_ACCOUNT_NO + ") REFERENCES " + DatabaseConstants.ACCOUNT_TABLE + "(" + DatabaseConstants.COLUMN_ACCOUNT_NO + ")" +
+                ")";
         db.execSQL(createTransactionTableQuery);
     }
 
