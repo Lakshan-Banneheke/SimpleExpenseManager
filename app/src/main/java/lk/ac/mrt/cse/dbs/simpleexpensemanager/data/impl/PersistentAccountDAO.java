@@ -19,8 +19,8 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 public class PersistentAccountDAO implements AccountDAO {
     private DatabaseHelper databaseHelper;
 
-    public PersistentAccountDAO(Context context) {
-        this.databaseHelper = new DatabaseHelper(context);
+    public PersistentAccountDAO(DatabaseHelper databaseHelper) {
+        this.databaseHelper = databaseHelper;
     }
 
     @Override

@@ -24,8 +24,8 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
 public class PersistentTransactionDAO implements TransactionDAO {
     private DatabaseHelper databaseHelper;
 
-    public PersistentTransactionDAO(Context context) {
-        this.databaseHelper = new DatabaseHelper(context);
+    public PersistentTransactionDAO(DatabaseHelper databaseHelper) {
+        this.databaseHelper = databaseHelper;
     }
 
 
